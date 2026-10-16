@@ -7,49 +7,72 @@
 <title>Space Exploration Quiz</title>
 <style>
   :root {
-    --bg: #f4f5fb;
-    --card: #ffffff;
-    --text: #1d2033;
-    --muted: #6b7088;
-    --border: #e1e3ee;
-    --accent: #5b5bf0;
-    --accent-2: #a855f7;
-    --correct: #16a34a;
-    --correct-bg: #dcfce7;
-    --wrong: #dc2626;
-    --wrong-bg: #fee2e2;
-    --shadow: 0 10px 30px rgba(30, 35, 80, 0.08);
+    color-scheme: dark;
+    --bg: #050610;
+    --sky-text: #f1efff;
+    --sky-muted: #c4c0df;
+    --nebula-violet: #492479;
+    --nebula-blue: #123f65;
+    --nebula-rose: #632b55;
+    --star: #f3eaff;
+    --star-soft: #b6b5eb;
+    --hole-core: #020208;
+    --disk-violet: #9864dc;
+    --disk-rose: #e9a4cf;
+    --disk-gold: #ffcb98;
+    --disk-light: #fff1df;
+    --card: #1c1a30;
+    --text: #f0edf9;
+    --muted: #b5b0cd;
+    --border: #46405e;
+    --accent: #af9cff;
+    --accent-2: #d0a3fa;
+    --button-start: #5144bf;
+    --button-end: #7137ae;
+    --button-text: #ffffff;
+    --correct: #72e49a;
+    --correct-bg: #1a372b;
+    --wrong: #ff959c;
+    --wrong-bg: #3c202e;
+    --shadow: 0 24px 80px rgba(0, 0, 0, 0.38), 0 0 50px rgba(152, 100, 220, 0.08);
     --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
-    --console-bg: #fbfcff;
-    --grid: rgba(91, 91, 240, 0.06);
-    --telemetry: #0e7490;
-    --bracket: rgba(14, 116, 144, 0.55);
-    --led: #16a34a;
+    --console-bg: #141323;
+    --grid: rgba(175, 156, 255, 0.035);
+    --telemetry: #b4cfff;
+    --bracket: rgba(175, 156, 255, 0.6);
+    --led: #72e49a;
+    --focus: #ded2ff;
+    --focus-halo: rgba(175, 156, 255, 0.25);
+    --option-hover: #2b2542;
+    --panel-glint: rgba(208, 163, 250, 0.12);
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #0d0f1c;
-      --card: #171a2e;
+      --card: #11131f;
       --text: #e8eaf6;
       --muted: #9aa0c0;
-      --border: #2a2e4a;
+      --border: #393850;
       --accent: #818cf8;
       --accent-2: #c084fc;
       --correct: #4ade80;
       --correct-bg: rgba(74, 222, 128, 0.14);
       --wrong: #f87171;
       --wrong-bg: rgba(248, 113, 113, 0.14);
-      --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-      --console-bg: #11142a;
-      --grid: rgba(129, 140, 248, 0.08);
+      --console-bg: #0d0e19;
+      --grid: rgba(129, 140, 248, 0.035);
       --telemetry: #67e8f9;
       --bracket: rgba(103, 232, 249, 0.6);
       --led: #4ade80;
+      --focus: #c7d2fe;
+      --focus-halo: rgba(199, 210, 254, 0.3);
+      --option-hover: #22213a;
+      --panel-glint: rgba(129, 140, 248, 0.12);
     }
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
   body {
+    position: relative;
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     font-size: 15px;
     line-height: 1.5;
@@ -59,18 +82,27 @@
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    padding: 40px 16px;
+    padding: 56px 16px 40px;
+    isolation: isolate;
   }
-  main { width: 100%; max-width: 440px; }
-  header { text-align: center; margin-bottom: 20px; }
-  h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: -0.01em; }
-  .subtitle { color: var(--muted); margin: 0; font-size: 14px; }
+  main { position: relative; z-index: 1; width: 100%; max-width: 440px; }
+  header { text-align: center; margin-bottom: 28px; color: var(--sky-text); }
+  .eyebrow {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin: 0 0 12px; font: 11px var(--mono); letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--sky-muted);
+  }
+  .eyebrow::before, .eyebrow::after {
+    content: ""; width: 28px; height: 1px; background: currentColor; opacity: 0.5;
+  }
+  h1 { font-size: 28px; font-weight: 650; margin: 0 0 8px; letter-spacing: -0.035em; }
+  .subtitle { color: var(--sky-muted); margin: 0; font-size: 14px; }
   .card {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 16px;
+    border-radius: 20px;
     padding: 22px;
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow), inset 0 1px 0 var(--panel-glint);
   }
   .meta {
     display: flex; justify-content: space-between; align-items: center;
@@ -125,7 +157,7 @@
     font: inherit; font-size: 15px; font-weight: 600;
     width: 100%; margin-top: 14px; padding: 12px;
     border: 0; border-radius: 12px; cursor: pointer;
-    color: #fff; background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    color: var(--button-text); background: linear-gradient(90deg, var(--button-start), var(--button-end));
     transition: opacity 0.2s, transform 0.1s;
   }
   .btn:hover { opacity: 0.92; }
@@ -176,7 +208,7 @@
     margin: 0 -22px 16px; padding: 9px 22px;
     border-bottom: 1px solid var(--border);
     background: var(--card);
-    border-radius: 16px 16px 0 0;
+    border-radius: 20px 20px 0 0;
     font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em;
     text-transform: uppercase; color: var(--muted);
   }
@@ -201,6 +233,7 @@
     text-transform: uppercase; color: var(--telemetry); margin-bottom: 4px;
   }
   #quiz.console .option { display: flex; align-items: center; gap: 12px; background: var(--card); }
+  #quiz.console .option:hover:not(:disabled) { background: var(--option-hover); }
   #quiz.console .option.correct { background: var(--correct-bg); }
   #quiz.console .option.wrong { background: var(--wrong-bg); }
   .key {
@@ -241,35 +274,62 @@
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-8px); }
   }
-  /* Subtle starfield */
-  :root { --star: rgba(67, 56, 202, 0.28); --star-soft: rgba(67, 56, 202, 0.14); --focus: #4338ca; --focus-halo: rgba(67, 56, 202, 0.25); }
-  @media (prefers-color-scheme: dark) {
-    :root { --star: rgba(255, 255, 255, 0.7); --star-soft: rgba(199, 210, 254, 0.35); --focus: #c7d2fe; --focus-halo: rgba(199, 210, 254, 0.3); }
+  /* The scene stays dark; foreground surfaces follow the system theme. */
+  .space-scene {
+    position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+    background:
+      radial-gradient(ellipse at 76% 25%, color-mix(in srgb, var(--nebula-violet) 32%, transparent), transparent 56%),
+      radial-gradient(ellipse at 12% 88%, color-mix(in srgb, var(--nebula-blue) 40%, transparent), transparent 58%),
+      var(--bg);
   }
-  .stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-  .stars::before, .stars::after { content: ""; position: absolute; inset: -20%; }
+  .nebula {
+    position: absolute; inset: -15%; transform: rotate(-24deg);
+    background:
+      radial-gradient(ellipse 45% 12% at 60% 46%, color-mix(in srgb, var(--nebula-rose) 30%, transparent), transparent),
+      radial-gradient(ellipse 65% 18% at 50% 50%, color-mix(in srgb, var(--nebula-violet) 60%, transparent), transparent),
+      radial-gradient(ellipse 45% 12% at 20% 57%, color-mix(in srgb, var(--nebula-blue) 70%, transparent), transparent);
+  }
+  .stars { position: absolute; inset: 0; }
+  .stars::before, .stars::after { content: ""; position: absolute; inset: -120px; }
   .stars::before {
     background-image:
-      radial-gradient(1px 1px at 12% 18%, var(--star-soft) 50%, transparent 51%),
-      radial-gradient(1px 1px at 68% 32%, var(--star-soft) 50%, transparent 51%),
-      radial-gradient(1px 1px at 38% 74%, var(--star-soft) 50%, transparent 51%),
-      radial-gradient(1px 1px at 86% 82%, var(--star-soft) 50%, transparent 51%),
-      radial-gradient(1px 1px at 52% 8%, var(--star-soft) 50%, transparent 51%);
-    background-size: 220px 220px;
-    animation: drift 140s linear infinite;
+      radial-gradient(1px 1px at 12% 18%, var(--star-soft) 55%, transparent),
+      radial-gradient(1px 1px at 68% 32%, var(--star-soft) 55%, transparent),
+      radial-gradient(1px 1px at 38% 74%, var(--star-soft) 55%, transparent),
+      radial-gradient(1px 1px at 86% 82%, var(--star-soft) 55%, transparent),
+      radial-gradient(1px 1px at 52% 8%, var(--star-soft) 55%, transparent),
+      radial-gradient(1px 1px at 26% 42%, var(--star-soft) 55%, transparent);
+    background-size: 193px 239px;
+    opacity: 0.6;
   }
   .stars::after {
     background-image:
-      radial-gradient(1.5px 1.5px at 22% 42%, var(--star) 50%, transparent 51%),
-      radial-gradient(1.5px 1.5px at 78% 12%, var(--star) 50%, transparent 51%),
-      radial-gradient(2px 2px at 58% 66%, var(--star) 50%, transparent 51%),
-      radial-gradient(1.5px 1.5px at 8% 88%, var(--star) 50%, transparent 51%);
-    background-size: 340px 340px;
-    animation: twinkle 5s ease-in-out infinite, drift 220s linear infinite reverse;
+      radial-gradient(2px 2px at 22% 42%, var(--star) 25%, transparent),
+      radial-gradient(1.5px 1.5px at 78% 12%, var(--star) 35%, transparent),
+      radial-gradient(3px 3px at 58% 66%, var(--star) 10%, transparent),
+      radial-gradient(1.5px 1.5px at 8% 88%, var(--star) 35%, transparent);
+    background-size: 379px 397px;
+    animation: twinkle 9s ease-in-out infinite;
   }
-  main { position: relative; z-index: 1; }
-  @keyframes twinkle { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
-  @keyframes drift { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(-220px, -110px, 0); } }
+  .black-hole {
+    position: absolute; top: 20px; left: calc(50% - 20px);
+    width: clamp(680px, 65vw, 1000px); height: auto;
+  }
+  @keyframes twinkle { 0%, 100% { opacity: 0.85; } 50% { opacity: 0.4; } }
+  @media (max-width: 900px) {
+    body { padding-top: 220px; }
+    .black-hole {
+      top: -82px; left: 50%; width: 600px;
+      transform: translateX(-50%);
+    }
+    h1 { font-size: 26px; }
+  }
+  @media (max-width: 360px) {
+    .card { padding: 18px; }
+    #quiz.console { padding-top: 0; }
+    .console-bar { margin-right: -18px; margin-left: -18px; padding-right: 18px; padding-left: 18px; }
+    .console-bar, #quiz.console .meta { font-size: 11px; }
+  }
 
   /* Keyboard focus */
   :focus { outline: none; }
@@ -335,10 +395,60 @@
 </style>
 </head>
 <body>
-<div class="stars" aria-hidden="true"></div>
+<div class="space-scene" aria-hidden="true">
+  <div class="nebula"></div>
+  <div class="stars"></div>
+  <svg class="black-hole" viewBox="0 0 1000 650" focusable="false">
+    <defs>
+      <radialGradient id="hole-halo">
+        <stop offset="0.3" stop-color="var(--disk-gold)" stop-opacity="0"/>
+        <stop offset="0.46" stop-color="var(--disk-rose)" stop-opacity="0.2"/>
+        <stop offset="0.65" stop-color="var(--disk-violet)" stop-opacity="0.1"/>
+        <stop offset="1" stop-color="var(--disk-violet)" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="disk-color" x1="0" y1="0" x2="1" y2="0">
+        <stop stop-color="var(--disk-violet)" stop-opacity="0"/>
+        <stop offset="0.2" stop-color="var(--disk-violet)" stop-opacity="0.6"/>
+        <stop offset="0.42" stop-color="var(--disk-rose)"/>
+        <stop offset="0.62" stop-color="var(--disk-light)"/>
+        <stop offset="0.8" stop-color="var(--disk-gold)" stop-opacity="0.7"/>
+        <stop offset="1" stop-color="var(--disk-gold)" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="ring-color" x1="0" y1="1" x2="0.8" y2="0">
+        <stop stop-color="var(--disk-violet)"/>
+        <stop offset="0.5" stop-color="var(--disk-rose)"/>
+        <stop offset="1" stop-color="var(--disk-light)"/>
+      </linearGradient>
+      <filter id="soft-glow" x="-50%" y="-100%" width="200%" height="300%">
+        <feGaussianBlur stdDeviation="10"/>
+      </filter>
+      <filter id="rim-glow" x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur stdDeviation="3"/>
+      </filter>
+    </defs>
+    <ellipse cx="500" cy="325" rx="420" ry="290" fill="url(#hole-halo)"/>
+    <g transform="rotate(-16 500 325)" fill="none">
+      <ellipse cx="500" cy="325" rx="410" ry="52" stroke="url(#disk-color)" stroke-width="40" filter="url(#soft-glow)" opacity="0.65"/>
+      <ellipse cx="500" cy="325" rx="390" ry="42" stroke="url(#disk-color)" stroke-width="12" opacity="0.65"/>
+      <ellipse cx="500" cy="325" rx="370" ry="35" stroke="url(#disk-color)" stroke-width="3"/>
+      <ellipse cx="500" cy="325" rx="422" ry="60" stroke="url(#disk-color)" stroke-width="1" opacity="0.4"/>
+    </g>
+    <circle cx="500" cy="325" r="122" fill="var(--hole-core)"/>
+    <circle cx="500" cy="325" r="124" fill="none" stroke="url(#ring-color)" stroke-width="15" filter="url(#soft-glow)" opacity="0.8"/>
+    <circle cx="500" cy="325" r="121" fill="none" stroke="url(#ring-color)" stroke-width="5" filter="url(#rim-glow)"/>
+    <circle cx="500" cy="325" r="120" fill="none" stroke="url(#ring-color)" stroke-width="1.5"/>
+    <!-- Only the near half of the disk crosses the black-hole silhouette. -->
+    <g transform="rotate(-16 500 325)" fill="none">
+      <path d="M 90 325 A 410 52 0 0 0 910 325" stroke="url(#disk-color)" stroke-width="16" filter="url(#soft-glow)"/>
+      <path d="M 110 325 A 390 42 0 0 0 890 325" stroke="url(#disk-color)" stroke-width="5"/>
+      <path d="M 110 329 Q 500 357 890 329" stroke="url(#disk-color)" stroke-width="1.5"/>
+    </g>
+  </svg>
+</div>
 <main>
   <header>
-    <h1>🚀 Space Exploration Quiz</h1>
+    <p class="eyebrow">Beyond the event horizon</p>
+    <h1>Space Exploration Quiz</h1>
     <p class="subtitle">10 questions about missions, planets and pioneers</p>
   </header>
 
