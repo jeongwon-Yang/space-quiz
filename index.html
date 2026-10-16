@@ -138,6 +138,20 @@
     background: linear-gradient(90deg, var(--accent), var(--accent-2));
     -webkit-background-clip: text; background-clip: text; color: transparent; }
   .results p { color: var(--muted); margin: 0; }
+  .review {
+    margin-top: 20px; border: 1px solid var(--border); border-radius: 12px;
+    text-align: left; overflow: hidden;
+  }
+  .review summary {
+    padding: 12px 14px; color: var(--text); font-weight: 600; cursor: pointer;
+  }
+  .review summary:focus-visible { outline-offset: -3px; }
+  .review-content { padding: 0 14px 14px; }
+  .review-list { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+  .review-item { padding-top: 12px; border-top: 1px solid var(--border); }
+  .results .review-question { margin: 0 0 8px; color: var(--text); font-weight: 600; }
+  .results .review-answer { margin: 4px 0 0; color: var(--text); font-size: 14px; overflow-wrap: anywhere; }
+  .results .review-empty { margin: 0; color: var(--text); font-size: 14px; }
   .fade-in { animation: fadeUp 0.35s ease; }
 
   /* Mission-control console styling for the quiz card */
@@ -356,6 +370,10 @@
     <h2 id="verdict"></h2>
     <div class="big-score" id="final"></div>
     <p id="message"></p>
+    <details class="review" id="review">
+      <summary id="review-summary">Review incorrect answers</summary>
+      <div class="review-content" id="review-content"></div>
+    </details>
     <button class="btn" id="restart">Play again</button>
   </section>
 </main>
@@ -385,7 +403,7 @@
 
   els.confetti = $("confetti");
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  let index = 0, score = 0;
+  let index = 0, score = 0, wrongAnswers = [];
 
   function updateProgress(answered) {
     const pct = (answered / QUESTIONS.length) * 100;
@@ -438,6 +456,7 @@
       els.feedback.textContent = "✅ Correct! Nice work.";
       els.feedback.classList.add("good");
     } else {
+      wrongAnswers.push({ question: item.q, selected: item.a[i], answer: item.a[item.c] });
       btn.classList.add("wrong");
       buttons[item.c].classList.add("correct");
       els.feedback.textContent = `❌ Not quite — it's ${item.a[item.c]}.`;
@@ -464,6 +483,35 @@
     els.verdict.textContent = verdict;
     els.final.textContent = `${score} / ${total}`;
     els.message.textContent = message;
+    $("review-summary").textContent = `Review incorrect answers (${wrongAnswers.length})`;
+    const reviewContent = $("review-content");
+    reviewContent.replaceChildren();
+    if (wrongAnswers.length === 0) {
+      const emptyMessage = document.createElement("p");
+      emptyMessage.className = "review-empty";
+      emptyMessage.textContent = `All ${total} answers were correct. Nothing to review.`;
+      reviewContent.appendChild(emptyMessage);
+    } else {
+      const list = document.createElement("ol");
+      list.className = "review-list";
+      wrongAnswers.forEach(({ question, selected, answer }) => {
+        const item = document.createElement("li");
+        item.className = "review-item";
+        const prompt = document.createElement("p");
+        prompt.className = "review-question";
+        prompt.textContent = question;
+        const yourAnswer = document.createElement("p");
+        yourAnswer.className = "review-answer";
+        yourAnswer.textContent = `Your answer: ${selected}`;
+        const correctAnswer = document.createElement("p");
+        correctAnswer.className = "review-answer";
+        correctAnswer.textContent = `Correct answer: ${answer}`;
+        item.append(prompt, yourAnswer, correctAnswer);
+        list.appendChild(item);
+      });
+      reviewContent.appendChild(list);
+    }
+    $("review").open = false;
     const celebrate = score >= 8;
     els.results.classList.toggle("celebrate", celebrate);
     els.confetti.innerHTML = "";
@@ -494,7 +542,7 @@
   });
 
   els.restart.addEventListener("click", () => {
-    index = 0; score = 0;
+    index = 0; score = 0; wrongAnswers = [];
     els.score.textContent = "0";
     els.results.hidden = true;
     els.results.classList.remove("celebrate");
